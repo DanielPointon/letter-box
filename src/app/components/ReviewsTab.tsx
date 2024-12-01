@@ -16,6 +16,7 @@ interface Review {
   text: string;
   lang: Language;
   user: User;
+  imageUrl?: string;
 }
 
 const MOCK_REVIEWS: Review[] = [
@@ -29,6 +30,7 @@ const MOCK_REVIEWS: Review[] = [
       username: "John Doe",
       avatarUrl: "https://via.placeholder.com/40",
     },
+    imageUrl: "https://via.placeholder.com/150",
   },
   {
     id: "2",
@@ -51,6 +53,7 @@ const MOCK_REVIEWS: Review[] = [
       username: "Jean Dupont",
       avatarUrl: "https://via.placeholder.com/40",
     },
+    imageUrl: "https://via.placeholder.com/150",
   },
 ];
 
@@ -149,11 +152,11 @@ export function ReviewsTab({
           reviews.map((review) => (
             <li
               key={review.id}
-              className={`p-4 rounded-lg shadow flex justify-between items-center hover:bg-gray-100 ${
+              className={`p-4 rounded-lg shadow flex flex-col hover:bg-gray-100 ${
                 darkMode ? "bg-gray-700" : "bg-gray-50"
               }`}
             >
-              <div className="flex items-center">
+              <div className="flex items-center mb-4">
                 <Image
                   width={40}
                   height={40}
@@ -171,6 +174,17 @@ export function ReviewsTab({
                   </Link>
                 </div>
               </div>
+              {review.imageUrl && (
+                <div className="mt-4">
+                  <Image
+                    width={150}
+                    height={150}
+                    src={review.imageUrl}
+                    alt="Review Image"
+                    className="rounded-lg"
+                  />
+                </div>
+              )}
             </li>
           ))
         )}
