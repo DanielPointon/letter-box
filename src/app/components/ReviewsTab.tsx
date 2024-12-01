@@ -17,6 +17,7 @@ interface Review {
   lang: Language;
   user: User;
   imageUrl?: string;
+  responded: boolean;
 }
 
 const MOCK_REVIEWS: Review[] = [
@@ -31,6 +32,7 @@ const MOCK_REVIEWS: Review[] = [
       avatarUrl: "https://via.placeholder.com/40",
     },
     imageUrl: "https://via.placeholder.com/150",
+    responded: false,
   },
   {
     id: "2",
@@ -42,6 +44,7 @@ const MOCK_REVIEWS: Review[] = [
       username: "Maria Garcia",
       avatarUrl: "https://via.placeholder.com/40",
     },
+    responded: true,
   },
   {
     id: "3",
@@ -54,6 +57,7 @@ const MOCK_REVIEWS: Review[] = [
       avatarUrl: "https://via.placeholder.com/40",
     },
     imageUrl: "https://via.placeholder.com/150",
+    responded: false,
   },
 ];
 
@@ -66,7 +70,7 @@ export function ReviewsTab({
 }) {
   const [isReviewsLoading, setIsReviewsLoading] = useState(false);
   const [reviews, setReviews] = useState<Review[]>(MOCK_REVIEWS);
-  const [placeId, setPlaceId] = useState("");
+  const [filter, setFilter] = useState("all");
 
   if (isLoading) {
     return (
@@ -97,10 +101,6 @@ export function ReviewsTab({
     }, 1000); // Simulate 1 second API call
   };
 
-  const handlePlaceIdChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPlaceId(event.target.value);
-  };
-
   const fetchReviews = () => {
     setIsReviewsLoading(true);
     // Mock API call with timeout
@@ -111,6 +111,16 @@ export function ReviewsTab({
     }, 1000); // Simulate 1 second API call
   };
 
+  const handleFilterChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setFilter(event.target.value);
+  };
+
+  const filteredReviews = reviews.filter((review) => {
+    if (filter === "responded") return review.responded;
+    if (filter === "not-responded") return !review.responded;
+    return true;
+  });
+
   return (
     <div
       className={`bg-white rounded-lg shadow p-6 ${
@@ -119,24 +129,27 @@ export function ReviewsTab({
     >
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-2xl font-bold">Customer Reviews</h2>
-        <select
-          className="border-gray-300 rounded p-2"
-          onChange={handleLanguageChange}
-        >
-          <option value="English">Translate to English</option>
-          <option value="Spanish">Translate to Spanish</option>
-          <option value="French">Translate to French</option>
-        </select>
+        <div className="flex space-x-4">
+          <select
+            className="border-gray-300 rounded p-2"
+            onChange={handleLanguageChange}
+          >
+            <option value="English">Translate to English</option>
+            <option value="Spanish">Translate to Spanish</option>
+            <option value="French">Translate to French</option>
+          </select>
+          <select
+            className="border-gray-300 rounded p-2"
+            onChange={handleFilterChange}
+          >
+            <option value="all">All Reviews</option>
+            <option value="responded">Responded</option>
+            <option value="not-responded">Not Responded</option>
+          </select>
+        </div>
       </div>
 
       <div className="flex items-center mb-4">
-        <input
-          type="text"
-          className="border-gray-300 rounded p-2 mr-2"
-          placeholder="Enter Place ID"
-          value={placeId}
-          onChange={handlePlaceIdChange}
-        />
         <button
           className="bg-blue-500 text-white px-4 py-2 rounded"
           onClick={fetchReviews}
@@ -149,7 +162,7 @@ export function ReviewsTab({
         {isReviewsLoading ? (
           <CircularProgress />
         ) : (
-          reviews.map((review) => (
+          filteredReviews.map((review) => (
             <li
               key={review.id}
               className={`p-4 rounded-lg shadow flex flex-col hover:bg-gray-100 ${

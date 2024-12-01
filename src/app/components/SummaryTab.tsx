@@ -11,6 +11,8 @@ import {
   Pie,
   Cell,
 } from "recharts";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
 
 export function SummaryTab({
   darkMode,
@@ -23,12 +25,76 @@ export function SummaryTab({
     return <CircularProgress />;
   }
 
+  const locations = [
+    {
+      id: "1",
+      name: "Location 1",
+      lat: 51.505,
+      lng: -0.09,
+      metrics: { positive: 85, neutral: 10, negative: 5 },
+    },
+    {
+      id: "2",
+      name: "Location 2",
+      lat: 51.515,
+      lng: -0.1,
+      metrics: { positive: 70, neutral: 20, negative: 10 },
+    },
+    {
+      id: "3",
+      name: "Location 3",
+      lat: 51.525,
+      lng: -0.11,
+      metrics: { positive: 90, neutral: 5, negative: 5 },
+    },
+  ];
+
+  const barData = locations.map((location) => ({
+    name: location.name,
+    Positive: location.metrics.positive,
+    Neutral: location.metrics.neutral,
+    Negative: location.metrics.negative,
+  }));
+
+  const pieData = [
+    { name: "English", value: 70 },
+    { name: "Spanish", value: 20 },
+    { name: "French", value: 10 },
+  ];
+
+  const COLORS = ["#2196f3", "#ff9800", "#9c27b0"];
+
   return (
     <div
       className={`bg-white rounded-lg shadow p-6 ${
         darkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"
       }`}
     >
+      <div className="mt-6">
+        <h3 className="text-xl font-bold mb-4">Locations</h3>
+        <MapContainer
+          center={[51.505, -0.09]}
+          zoom={13}
+          style={{ height: "400px", width: "100%" }}
+        >
+          <TileLayer
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          />
+          {locations.map((location) => (
+            <Marker key={location.id} position={[location.lat, location.lng]}>
+              <Popup>
+                <div>
+                  <h4>{location.name}</h4>
+                  <p>Positive: {location.metrics.positive}%</p>
+                  <p>Neutral: {location.metrics.neutral}%</p>
+                  <p>Negative: {location.metrics.negative}%</p>
+                </div>
+              </Popup>
+            </Marker>
+          ))}
+        </MapContainer>
+      </div>
       <h2 className="text-2xl font-bold mb-4">Feedback Summary</h2>
       <p>
         Here’s a quick overview of recurring themes and insights from customer
@@ -74,7 +140,9 @@ export function SummaryTab({
             <YAxis />
             <Tooltip />
             <Legend />
-            <Bar dataKey="value" fill="#8884d8" />
+            <Bar dataKey="Positive" fill="#4caf50" />
+            <Bar dataKey="Neutral" fill="#ffeb3b" />
+            <Bar dataKey="Negative" fill="#f44336" />
           </BarChart>
         </div>
         <div
@@ -110,20 +178,6 @@ export function SummaryTab({
     </div>
   );
 }
-
-const barData = [
-  { name: "Positive", value: 85 },
-  { name: "Neutral", value: 10 },
-  { name: "Negative", value: 5 },
-];
-
-const pieData = [
-  { name: "English", value: 70 },
-  { name: "Spanish", value: 20 },
-  { name: "French", value: 10 },
-];
-
-const COLORS = ["#2196f3", "#ff9800", "#9c27b0"];
 
 function InsightCard({
   title,

@@ -12,9 +12,11 @@
     "@emotion/react": "^11.13.5",
     "@emotion/styled": "^11.13.5",
     "@mui/material": "^6.1.9",
+    "leaflet": "^1.9.4",
     "next": "15.0.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-leaflet": "^4.2.1",
     "recharts": "^2.13.3"
   },
   "devDependencies": {
