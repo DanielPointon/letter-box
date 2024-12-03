@@ -6,12 +6,12 @@ import { useState, useEffect } from "react";
 export default function ReviewDetails() {
   const { id } = useParams();
   const [response, setResponse] = useState("");
+  const [translation, setTranslation] = useState("");
   const [aiLoading, setAiLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [submissionStatus, setSubmissionStatus] = useState<string>("");
   const [isTyping, setIsTyping] = useState(false);
-  
+
   // Mock review data
   const mockReview = {
     language: "Spanish",
@@ -27,14 +27,25 @@ export default function ReviewDetails() {
     }
   };
 
-  // Typewriter effect function
-  const typewriterEffect = async (finalText: string, speed: number = 30) => {
+  const getTranslation = (text: string): string => {
+    return mockTranslations[mockReview.language]?.[text] || 
+      `[${mockReview.language} translation would go here]`;
+  };
+
+  const typewriterEffect = async (text: string, translatedText: string, speed: number = 30) => {
     setIsTyping(true);
     let currentText = "";
+    let currentTranslation = "";
     
-    for (let i = 0; i < finalText.length; i++) {
-      currentText += finalText[i];
-      setResponse(currentText);
+    for (let i = 0; i < text.length || i < translatedText.length; i++) {
+      if (i < text.length) {
+        currentText += text[i];
+        setResponse(currentText);
+      }
+      if (i < translatedText.length) {
+        currentTranslation += translatedText[i];
+        setTranslation(currentTranslation);
+      }
       await new Promise(resolve => setTimeout(resolve, speed));
     }
     
@@ -44,36 +55,28 @@ export default function ReviewDetails() {
   const handleGenerateAIResponse = async () => {
     setAiLoading(true);
     const aiResponse = "Thank you for your feedback! We're glad you enjoyed your experience and will strive to make it even better.";
+    const translatedResponse = getTranslation(aiResponse);
     
-    // Start typewriter effect
-    await typewriterEffect(aiResponse);
+    setResponse("");
+    setTranslation("");
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    await typewriterEffect(aiResponse, translatedResponse);
     setAiLoading(false);
   };
 
   const handleSubmitResponse = async () => {
     setIsSubmitting(true);
-    setSubmissionStatus(`Translating into ${mockReview.language}...`);
-
-    // Store original text
-    const originalText = response;
-    
-    // Get translation
-    const translatedText = mockTranslations[mockReview.language]?.[originalText] || 
-      `[${mockReview.language} translation would go here]`;
-
-    // Clear current text and type out translation
-    setResponse("");
-    await new Promise(resolve => setTimeout(resolve, 500)); // Brief pause
-    await typewriterEffect(translatedText);
-    
-    setSubmissionStatus("Done");
+    await new Promise(resolve => setTimeout(resolve, 1000));
     setIsSubmitted(true);
+    setIsSubmitting(false);
+  };
 
-    // Reset submission status after a moment
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setSubmissionStatus("");
-    }, 1000);
+  const handleResponseChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    if (!isTyping) {
+      setResponse(e.target.value);
+      setTranslation(getTranslation(e.target.value));
+    }
   };
 
   return (
@@ -101,64 +104,79 @@ export default function ReviewDetails() {
         </div>
 
         {/* Respond Section */}
-        <div>
-          <h3 className="text-lg font-bold text-gray-700 mb-4">
-            Respond to Review
-          </h3>
+        {!isSubmitted ? (
+          <div>
+            <h3 className="text-lg font-bold text-gray-700 mb-4">
+              Respond to Review
+            </h3>
 
-          {/* Response Input */}
-          <div className="relative">
-            <textarea
-              value={response}
-              onChange={(e) => !isTyping && setResponse(e.target.value)}
-              className="w-full h-32 border-gray-300 rounded p-2 focus:ring-2 focus:ring-blue-500 text-gray-900"
-              placeholder="Write your response..."
-              disabled={isSubmitted || isTyping}
-            />
-            {isTyping && (
-              <span className="absolute bottom-3 right-3 animate-pulse text-blue-500">▍</span>
-            )}
-          </div>
+            {/* Dual Language Response Display */}
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <div className="relative">
+                <label className="block text-sm font-medium text-gray-700 mb-2">English</label>
+                <textarea
+                  value={response}
+                  onChange={handleResponseChange}
+                  className="w-full h-32 border-gray-300 rounded p-2 focus:ring-2 focus:ring-blue-500 text-gray-900"
+                  placeholder="Write your response..."
+                  disabled={isTyping}
+                />
+                {isTyping && (
+                  <span className="absolute bottom-3 right-3 animate-pulse text-blue-500">▍</span>
+                )}
+              </div>
+              <div className="relative">
+                <label className="block text-sm font-medium text-gray-700 mb-2">{mockReview.language}</label>
+                <textarea
+                  value={translation}
+                  className="w-full h-32 border-gray-300 rounded p-2 bg-gray-50 text-gray-900"
+                  disabled
+                  placeholder="Translation will appear here..."
+                />
+                {isTyping && (
+                  <span className="absolute bottom-3 right-3 animate-pulse text-blue-500">▍</span>
+                )}
+              </div>
+            </div>
 
-          {/* Buttons */}
-          <div className="flex items-center space-x-4 mt-4">
-            <button
-              onClick={handleGenerateAIResponse}
-              className={`${
-                aiLoading || isSubmitted ? "bg-gray-400" : "bg-blue-600 hover:bg-blue-500"
-              } text-white px-4 py-2 rounded shadow flex items-center space-x-2`}
-              disabled={aiLoading || isSubmitting || isSubmitted || isTyping}
-            >
-              {aiLoading && (
-                <svg
-                  className="animate-spin h-5 w-5 text-white"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  ></circle>
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8v8H4z"
-                  ></path>
-                </svg>
-              )}
-              <span>Generate AI Response</span>
-            </button>
-            <div className="relative">
+            {/* Buttons */}
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={handleGenerateAIResponse}
+                className={`${
+                  aiLoading ? "bg-gray-400" : "bg-blue-600 hover:bg-blue-500"
+                } text-white px-4 py-2 rounded shadow flex items-center space-x-2`}
+                disabled={aiLoading || isSubmitting || isTyping}
+              >
+                {aiLoading && (
+                  <svg
+                    className="animate-spin h-5 w-5 text-white mr-2"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8v8H4z"
+                    ></path>
+                  </svg>
+                )}
+                <span>Generate AI Response</span>
+              </button>
               <button 
                 onClick={handleSubmitResponse}
-                disabled={isSubmitting || !response || isSubmitted || isTyping}
+                disabled={isSubmitting || !response || isTyping}
                 className={`
-                  ${isSubmitting || isSubmitted ? 'bg-gray-400' : 'bg-green-600 hover:bg-green-500'} 
+                  ${isSubmitting ? 'bg-gray-400' : 'bg-green-600 hover:bg-green-500'} 
                   text-white px-4 py-2 rounded shadow flex items-center space-x-2
                 `}
               >
@@ -187,17 +205,21 @@ export default function ReviewDetails() {
                     <span>Submitting...</span>
                   </>
                 ) : (
-                  <span>{isSubmitted ? 'Submitted' : 'Submit Response'}</span>
+                  <span>Submit Response</span>
                 )}
               </button>
-              {submissionStatus && (
-                <div className="absolute top-full left-0 mt-2 text-sm text-gray-600">
-                  {submissionStatus}
-                </div>
-              )}
             </div>
           </div>
-        </div>
+        ) : (
+          <div className="text-center py-8">
+            <div className="text-2xl font-bold text-green-600 mb-2">
+              Response submitted!
+            </div>
+            <p className="text-gray-600">
+              Your response has been successfully submitted and translated.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

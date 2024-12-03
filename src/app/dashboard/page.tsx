@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { SummaryTab } from "../components/SummaryTab";
+import { Activity, MessageCircle, Star, BarChart2, Sparkles } from "lucide-react";
 import { ReviewsTab } from "../components/ReviewsTab";
 import "leaflet/dist/leaflet.css";
 
@@ -32,17 +33,27 @@ export default function Dashboard() {
       }`}
     >
       {/* Header */}
-      <header
-        className={`bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-6 py-4 shadow-md`}
-      >
-        <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-semibold">Business Dashboard</h1>
-          <button
-            className="bg-gray-800 text-white px-4 py-2 rounded"
-            onClick={() => setDarkMode(!darkMode)}
-          >
-            Toggle Dark Mode
-          </button>
+      {/* Header section only */}
+      <header className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white">
+        <div className="max-w-6xl mx-auto px-6 py-4">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
+                <Sparkles className="w-8 h-8" />
+                <h1 className="text-3xl font-bold">Insightify</h1>
+              </div>
+              <div className="hidden md:flex items-center text-sm text-blue-100 border-l border-blue-400 pl-4">
+                <span>Powered by <b>Gemini Nano</b></span>
+                <Sparkles className="w-4 h-4 ml-1" />
+              </div>
+            </div>
+            <button
+              className="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
+              onClick={() => setDarkMode(!darkMode)}
+            >
+              Toggle Dark Mode
+            </button>
+          </div>
         </div>
       </header>
 
