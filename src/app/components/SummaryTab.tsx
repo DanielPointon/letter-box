@@ -14,13 +14,7 @@ import {
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 
-export function SummaryTab({
-  darkMode,
-  isLoading,
-}: {
-  darkMode: boolean;
-  isLoading: boolean;
-}) {
+export function SummaryTab({ isLoading }: { isLoading: boolean }) {
   if (isLoading) {
     return <CircularProgress />;
   }
@@ -65,11 +59,7 @@ export function SummaryTab({
   const COLORS = ["#2196f3", "#ff9800", "#9c27b0"];
 
   return (
-    <div
-      className={`bg-white rounded-lg shadow p-6 ${
-        darkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"
-      }`}
-    >
+    <div className="bg-white rounded-lg shadow p-6 bg-white text-gray-900">
       <div className="mt-6">
         <h3 className="text-xl font-bold mb-4">Locations</h3>
         <MapContainer
@@ -107,22 +97,16 @@ export function SummaryTab({
           title="Common Praise"
           description="Customers love the fast delivery times and friendly customer support!"
           icon="👍"
-          darkMode={darkMode}
         />
         <InsightCard
           title="Recurring Complaint"
           description="Some customers mentioned difficulty in navigating the mobile app."
           icon="⚠️"
-          darkMode={darkMode}
         />
       </div>
 
       <div className="grid grid-cols-2 gap-6 mt-6">
-        <div
-          className={`rounded-lg shadow p-6 ${
-            darkMode ? "bg-gray-700" : "bg-white"
-          }`}
-        >
+        <div className="rounded-lg shadow p-6 bg-white">
           <h3 className="text-xl font-bold mb-4">Sentiment Analysis</h3>
           <BarChart
             width={500}
@@ -145,11 +129,7 @@ export function SummaryTab({
             <Bar dataKey="Negative" fill="#f44336" />
           </BarChart>
         </div>
-        <div
-          className={`rounded-lg shadow p-6 ${
-            darkMode ? "bg-gray-700" : "bg-white"
-          }`}
-        >
+        <div className="rounded-lg shadow p-6 bg-white">
           <h3 className="text-xl font-bold mb-4">Top Languages</h3>
           <PieChart width={400} height={400}>
             <Pie
@@ -183,32 +163,18 @@ function InsightCard({
   title,
   description,
   icon,
-  darkMode,
 }: {
   title: string;
   description: string;
   icon?: string;
-  darkMode: boolean;
 }) {
   return (
-    <div
-      className={`border-l-4 p-4 rounded-lg shadow ${
-        darkMode ? "bg-gray-700 border-blue-500" : "bg-blue-50 border-blue-500"
-      }`}
-    >
+    <div className="border-l-4 p-4 rounded-lg shadow bg-blue-50 border-blue-500">
       <div className="flex items-center mb-2">
         <span className="text-3xl mr-3">{icon}</span>
-        <h3
-          className={`font-bold text-lg ${
-            darkMode ? "text-white" : "text-blue-600"
-          }`}
-        >
-          {title}
-        </h3>
+        <h3 className="font-bold text-lg text-blue-600">{title}</h3>
       </div>
-      <p className={`${darkMode ? "text-gray-300" : "text-gray-600"}`}>
-        {description}
-      </p>
+      <p className="text-gray-600">{description}</p>
     </div>
   );
 }

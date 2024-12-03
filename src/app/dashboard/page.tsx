@@ -2,13 +2,12 @@
 
 import { useState } from "react";
 import { SummaryTab } from "../components/SummaryTab";
-import { Activity, MessageCircle, Star, BarChart2, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { ReviewsTab } from "../components/ReviewsTab";
 import "leaflet/dist/leaflet.css";
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("summary");
-  const [darkMode, setDarkMode] = useState(false);
   const [placeIds, setPlaceIds] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -27,36 +26,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div
-      className={`min-h-screen ${
-        darkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"
-      }`}
-    >
-      {/* Header */}
-      {/* Header section only */}
-      <header className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white">
-        <div className="max-w-6xl mx-auto px-6 py-4">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <Sparkles className="w-8 h-8" />
-                <h1 className="text-3xl font-bold">Insightify</h1>
-              </div>
-              <div className="hidden md:flex items-center text-sm text-blue-100 border-l border-blue-400 pl-4">
-                <span>Powered by <b>Gemini Nano</b></span>
-                <Sparkles className="w-4 h-4 ml-1" />
-              </div>
-            </div>
-            <button
-              className="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
-              onClick={() => setDarkMode(!darkMode)}
-            >
-              Toggle Dark Mode
-            </button>
-          </div>
-        </div>
-      </header>
-
+    <div className="min-h-screen  text-gray-900">
       {/* Place IDs Input */}
       <div className="flex items-center justify-center my-4">
         <input
@@ -74,11 +44,7 @@ export default function Dashboard() {
       </div>
 
       {/* Tab Navigation */}
-      <div
-        className={`bg-white shadow-md sticky top-0 z-10 ${
-          darkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"
-        }`}
-      >
+      <div className="bg-white shadow-md  bg-white text-gray-900">
         <div className="flex justify-center space-x-8 text-lg">
           <button
             className={`py-3 px-6 font-medium transition ${
@@ -105,12 +71,8 @@ export default function Dashboard() {
 
       {/* Tab Content */}
       <main className="p-6 max-w-6xl mx-auto">
-        {activeTab === "summary" && (
-          <SummaryTab darkMode={darkMode} isLoading={isLoading} />
-        )}
-        {activeTab === "reviews" && (
-          <ReviewsTab darkMode={darkMode} isLoading={isLoading} />
-        )}
+        {activeTab === "summary" && <SummaryTab isLoading={isLoading} />}
+        {activeTab === "reviews" && <ReviewsTab isLoading={isLoading} />}
       </main>
     </div>
   );

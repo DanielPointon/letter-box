@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import { Navbar, NavbarBrand, NavbarContent } from "@nextui-org/navbar";
+import { Sparkles } from "lucide-react";
+import Link from "next/link";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -28,6 +31,24 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <Navbar className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-6 py-4">
+          <NavbarBrand>
+            <Link href="/">
+              <div className="flex items-center space-x-2">
+                <Sparkles className="w-8 h-8" />
+                <h1 className="text-3xl font-bold">Insightify</h1>
+              </div>
+            </Link>
+          </NavbarBrand>
+          <NavbarContent>
+            <div className="hidden md:flex items-center text-sm text-blue-100 border-l border-blue-400 pl-4">
+              <span>
+                Powered by <b>Gemini Nano</b>
+              </span>
+              <Sparkles className="w-4 h-4 ml-1" />
+            </div>
+          </NavbarContent>
+        </Navbar>
         {children}
       </body>
     </html>
