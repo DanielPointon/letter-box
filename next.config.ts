@@ -18,7 +18,7 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  swcMinify: false,
+  reactStrictMode: false,
 };
 
 export default nextConfig;

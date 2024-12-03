@@ -1,5 +1,8 @@
+"use client";
+
 import React, { useState, useEffect } from "react";
 import { useInView } from "react-intersection-observer";
+import dynamic from 'next/dynamic';
 import {
   BarChart,
   CartesianGrid,
@@ -13,8 +16,6 @@ import {
   Cell,
   ResponsiveContainer
 } from "recharts";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import "leaflet/dist/leaflet.css";
 
 // Types
 interface Location {
@@ -60,6 +61,19 @@ interface TypewriterBulletPointProps {
   activeIndex: number;
   completedIndices: Set<number>;
 }
+
+// Dynamically import the map component
+const MapWithNoSSR = dynamic(
+  () => import('./Map'), 
+  { 
+    ssr: false,
+    loading: () => (
+      <div className="h-[400px] w-full bg-slate-800 rounded-lg flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    )
+  }
+);
 
 // Chart theme configuration
 const chartTheme = {
@@ -308,29 +322,7 @@ export const SummaryTab: React.FC<SummaryTabProps> = ({ isLoading }) => {
     <div className="bg-slate-900 text-slate-200 rounded-lg shadow-xl p-6">
       <div className="mt-6 mb-8">
         <h3 className="text-xl font-bold mb-4">Locations</h3>
-        <MapContainer
-          center={[51.505, -0.09]}
-          zoom={13}
-          style={{ height: "400px", width: "100%" }}
-          className="rounded-lg shadow-lg"
-        >
-          <TileLayer
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          />
-          {locations.map((location) => (
-            <Marker key={location.id} position={[location.lat, location.lng]}>
-              <Popup>
-                <div className="p-2">
-                  <h4 className="font-bold">{location.name}</h4>
-                  <p>Positive: {location.metrics.positive}%</p>
-                  <p>Neutral: {location.metrics.neutral}%</p>
-                  <p>Negative: {location.metrics.negative}%</p>
-                </div>
-              </Popup>
-            </Marker>
-          ))}
-        </MapContainer>
+        <MapWithNoSSR locations={locations} />
       </div>
 
       <h2 className="text-2xl font-bold mb-4">Feedback Summary</h2>
