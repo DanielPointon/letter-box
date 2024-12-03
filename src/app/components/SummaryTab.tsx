@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useInView } from 'react-intersection-observer';
+import React, { useState, useEffect } from "react";
+import { useInView } from "react-intersection-observer";
 import {
   BarChart,
   CartesianGrid,
@@ -44,11 +44,9 @@ interface InsightCardProps {
   title: string;
   points: string[];
   icon?: string;
-  darkMode: boolean;
 }
 
 interface SummaryTabProps {
-  darkMode: boolean;
   isLoading: boolean;
 }
 
@@ -63,18 +61,18 @@ interface TypewriterBulletPointProps {
 }
 
 const useTypewriter = (
-  text: string, 
-  delay = 50, 
-  startTyping = false, 
+  text: string,
+  delay = 50,
+  startTyping = false,
   onComplete?: () => void
 ): { displayText: string; isComplete: boolean } => {
-  const [displayText, setDisplayText] = useState<string>('');
+  const [displayText, setDisplayText] = useState<string>("");
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [isComplete, setIsComplete] = useState<boolean>(false);
 
   useEffect(() => {
     if (!startTyping) {
-      setDisplayText('');
+      setDisplayText("");
       setCurrentIndex(0);
       setIsComplete(false);
       return;
@@ -82,8 +80,8 @@ const useTypewriter = (
 
     if (currentIndex < text.length) {
       const timer: NodeJS.Timeout = setTimeout(() => {
-        setDisplayText(prev => prev + text[currentIndex]);
-        setCurrentIndex(prev => prev + 1);
+        setDisplayText((prev) => prev + text[currentIndex]);
+        setCurrentIndex((prev) => prev + 1);
       }, delay);
 
       return () => clearTimeout(timer);
@@ -96,22 +94,27 @@ const useTypewriter = (
   return { displayText, isComplete };
 };
 
-const TypewriterBulletPoint: React.FC<TypewriterBulletPointProps> = ({ 
-  text, 
-  delay, 
+const TypewriterBulletPoint: React.FC<TypewriterBulletPointProps> = ({
+  text,
+  delay,
   startTyping,
   onComplete,
   index,
   activeIndex,
-  completedIndices
+  completedIndices,
 }) => {
-  const { displayText, isComplete } = useTypewriter(text, delay, startTyping, onComplete);
-  
+  const { displayText, isComplete } = useTypewriter(
+    text,
+    delay,
+    startTyping,
+    onComplete
+  );
+
   const isVisible = index <= activeIndex || completedIndices.has(index);
   const textToShow = completedIndices.has(index) ? text : displayText;
-  
+
   return (
-    <li 
+    <li
       className="mb-2 flex items-start opacity-0 transition-opacity duration-300"
       style={{ opacity: isVisible ? 1 : 0 }}
     >
@@ -121,18 +124,15 @@ const TypewriterBulletPoint: React.FC<TypewriterBulletPointProps> = ({
   );
 };
 
-const InsightCard: React.FC<InsightCardProps> = ({
-  title,
-  points,
-  icon,
-  darkMode,
-}) => {
+const InsightCard: React.FC<InsightCardProps> = ({ title, points, icon }) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [activeIndex, setActiveIndex] = useState<number>(-1);
-  const [completedIndices, setCompletedIndices] = useState<Set<number>>(new Set());
+  const [completedIndices, setCompletedIndices] = useState<Set<number>>(
+    new Set()
+  );
   const { ref, inView } = useInView({
     threshold: 0.5,
-    triggerOnce: true
+    triggerOnce: true,
   });
 
   useEffect(() => {
@@ -146,7 +146,7 @@ const InsightCard: React.FC<InsightCardProps> = ({
   }, [inView]);
 
   const handleBulletComplete = (index: number) => {
-    setCompletedIndices(prev => {
+    setCompletedIndices((prev) => {
       const newSet = new Set(prev);
       newSet.add(index);
       return newSet;
@@ -154,9 +154,13 @@ const InsightCard: React.FC<InsightCardProps> = ({
   };
 
   useEffect(() => {
-    if (!isLoading && activeIndex < points.length - 1 && completedIndices.has(activeIndex)) {
+    if (
+      !isLoading &&
+      activeIndex < points.length - 1 &&
+      completedIndices.has(activeIndex)
+    ) {
       const timer = setTimeout(() => {
-        setActiveIndex(prev => prev + 1);
+        setActiveIndex((prev) => prev + 1);
       }, 100);
       return () => clearTimeout(timer);
     }
@@ -165,17 +169,14 @@ const InsightCard: React.FC<InsightCardProps> = ({
   return (
     <div
       ref={ref}
-      className={`border-l-4 p-6 rounded-lg shadow-lg transition-all duration-300 ${
-        darkMode 
-          ? "bg-gray-700 border-blue-500 text-white" 
-          : "bg-blue-50 border-blue-500 text-gray-900"
-      }`}
+      className="border-l-4 p-6 rounded-lg shadow-lg transition-all duration-300 bg-blue-50 border-blue-500 text-gray-900"
     >
       <div className="flex items-center mb-4">
         <span className="text-3xl mr-3">{icon}</span>
-        <h3 className={`font-bold text-xl ${
-          darkMode ? "text-white" : "text-blue-600"
-        }`}>
+        <h3
+          className={`font-bold text-xl text-blue-600"
+          }`}
+        >
           {title}
         </h3>
       </div>
@@ -189,9 +190,7 @@ const InsightCard: React.FC<InsightCardProps> = ({
             </div>
           </div>
         ) : (
-          <ul className={`space-y-3 transition-opacity duration-500 ${
-            darkMode ? "text-gray-300" : "text-gray-600"
-          }`}>
+          <ul className="space-y-3 transition-opacity duration-500 text-gray-600">
             {points.map((point, index) => (
               <TypewriterBulletPoint
                 key={index}
@@ -211,7 +210,7 @@ const InsightCard: React.FC<InsightCardProps> = ({
   );
 };
 
-export const SummaryTab: React.FC<SummaryTabProps> = ({ darkMode, isLoading }) => {
+export const SummaryTab: React.FC<SummaryTabProps> = ({ isLoading }) => {
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -266,16 +265,15 @@ export const SummaryTab: React.FC<SummaryTabProps> = ({ darkMode, isLoading }) =
     "Check-in process is consistently quick and efficient",
     "Staff receives excellent reviews for their hospitality",
     "Room cleanliness and comfort exceed guest expectations",
-    "Breakfast buffet quality highly praised by guests"
+    "Breakfast buffet quality highly praised by guests",
   ];
 
   const recurringComplaintPoints: string[] = [
     "Room service menu could offer more variety",
     "Some guests report inconsistent water temperature",
     "Wifi connection can be unstable in certain rooms",
-    "Parking facilities too limited during peak seasons"
+    "Parking facilities too limited during peak seasons",
   ];
-
 
   return (
     <div className="bg-white rounded-lg shadow p-6 bg-white text-gray-900">
@@ -325,11 +323,7 @@ export const SummaryTab: React.FC<SummaryTabProps> = ({ darkMode, isLoading }) =
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div
-          className={`rounded-lg shadow p-6 ${
-            darkMode ? "bg-gray-700" : "bg-white"
-          }`}
-        >
+        <div className="rounded-lg shadow p-6 bg-white">
           <h3 className="text-xl font-bold mb-4">Sentiment Analysis</h3>
           <BarChart
             width={500}
@@ -354,8 +348,7 @@ export const SummaryTab: React.FC<SummaryTabProps> = ({ darkMode, isLoading }) =
         </div>
 
         <div
-          className={`rounded-lg shadow p-6 ${
-            darkMode ? "bg-gray-700" : "bg-white"
+          className={`rounded-lg shadow p-6 bg-white"
           }`}
         >
           <h3 className="text-xl font-bold mb-4">Top Languages</h3>

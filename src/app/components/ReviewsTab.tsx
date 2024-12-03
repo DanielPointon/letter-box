@@ -2,7 +2,13 @@ import React, { useState } from "react";
 import { CircularProgress } from "@mui/material";
 import Link from "next/link";
 import Image from "next/image";
-import { MessagesSquare, Star, Clock, ArrowUpRight, CheckCircle2 } from "lucide-react";
+import {
+  MessagesSquare,
+  Star,
+  Clock,
+  ArrowUpRight,
+  CheckCircle2,
+} from "lucide-react";
 
 type Language = "English" | "Spanish" | "French";
 
@@ -165,16 +171,14 @@ export const ReviewsTab: React.FC<{
       <Star
         key={index}
         className={`w-4 h-4 ${
-          index < rating
-            ? "text-yellow-400 fill-yellow-400"
-            : "text-gray-300"
+          index < rating ? "text-yellow-400 fill-yellow-400" : "text-gray-300"
         }`}
       />
     ));
   };
 
   return (
-    <div className={`bg-white rounded-xl shadow-xl p-6 ${darkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"}`}>
+    <div className="bg-white rounded-xl shadow-xl p-6 bg-gray-800 text-white bg-white text-gray-900">
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 space-y-4 md:space-y-0">
         <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 text-transparent bg-clip-text">
           Customer Reviews
@@ -182,11 +186,7 @@ export const ReviewsTab: React.FC<{
         <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
           <div className="flex items-center space-x-2">
             <select
-              className={`border rounded-lg p-2 ${
-                darkMode 
-                  ? "bg-gray-700 border-gray-600" 
-                  : "bg-white border-gray-300"
-              }`}
+              className="border rounded-lg p-2 bg-white border-gray-300">
               onChange={handleLanguageChange}
               value={selectedLanguage}
             >
@@ -206,11 +206,7 @@ export const ReviewsTab: React.FC<{
             </button>
           </div>
           <select
-            className={`border rounded-lg p-2 ${
-              darkMode 
-                ? "bg-gray-700 border-gray-600" 
-                : "bg-white border-gray-300"
-            }`}
+            className="border rounded-lg p-2 bg-gray-700 border-gray-600 bg-white border-gray-300"
             onChange={handleFilterChange}
           >
             <option value="all">All Reviews</option>
@@ -224,9 +220,9 @@ export const ReviewsTab: React.FC<{
         {filteredReviews.map((review) => (
           <div
             key={review.id}
-            className={`p-6 rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl transform hover:-translate-y-1 ${
-              darkMode ? "bg-gray-700" : "bg-gray-50"
-            } border ${review.responded ? "border-green-500" : "border-yellow-500"}`}
+            className={`p-6 rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl transform hover:-translate-y-1 bg-gray-50 border ${
+              review.responded ? "border-green-500" : "border-yellow-500"
+            }`}
           >
             <div className="flex items-start justify-between">
               <div className="flex items-start space-x-4">
@@ -238,13 +234,17 @@ export const ReviewsTab: React.FC<{
                     alt={review.user.username}
                     className="rounded-full"
                   />
-                  <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full ${
-                    review.responded ? "bg-green-500" : "bg-yellow-500"
-                  } border-2 ${darkMode ? "border-gray-700" : "border-white"}`} />
+                  <div
+                    className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full ${
+                      review.responded ? "bg-green-500" : "bg-yellow-500"
+                    } border-2 border-white`}
+                  />
                 </div>
                 <div className="flex-grow">
                   <div className="flex items-center space-x-2 mb-1">
-                    <h3 className="font-semibold text-lg">{review.user.username}</h3>
+                    <h3 className="font-semibold text-lg">
+                      {review.user.username}
+                    </h3>
                     <div className="flex items-center">
                       {renderStars(review.rating)}
                     </div>
@@ -267,15 +267,17 @@ export const ReviewsTab: React.FC<{
                       </span>
                     )}
                   </div>
-                  <p className={`text-lg mb-4 ${
-                    review.isTranslating ? 'animate-pulse' : ''
-                  }`}>
-                    {review.isTranslating ? 'Translating...' : review.text}
+                  <p
+                    className={`text-lg mb-4 ${
+                      review.isTranslating ? "animate-pulse" : ""
+                    }`}
+                  >
+                    {review.isTranslating ? "Translating..." : review.text}
                   </p>
                 </div>
               </div>
             </div>
-            
+
             {review.imageUrl && (
               <div className="mt-4">
                 <Image
@@ -287,7 +289,7 @@ export const ReviewsTab: React.FC<{
                 />
               </div>
             )}
-            
+
             <div className="mt-4 flex items-center space-x-4">
               <Link
                 href={`/dashboard/reviews/${review.id}`}
@@ -298,14 +300,10 @@ export const ReviewsTab: React.FC<{
               </Link>
               <button
                 onClick={() => translateReview(review.id)}
-                className={`px-4 py-2 rounded-lg transition-all duration-200 ${
-                  darkMode
-                    ? "bg-gray-600 hover:bg-gray-500"
-                    : "bg-white hover:bg-gray-100"
-                } text-sm font-medium shadow-md hover:shadow-lg flex items-center`}
+                className={`px-4 py-2 rounded-lg transition-all duration-200 bg-white hover:bg-gray-100 text-sm font-medium shadow-md hover:shadow-lg flex items-center`}
                 disabled={review.isTranslating}
               >
-                {review.isTranslating ? 'Translating...' : 'Translate'}
+                {review.isTranslating ? "Translating..." : "Translate"}
               </button>
             </div>
           </div>
