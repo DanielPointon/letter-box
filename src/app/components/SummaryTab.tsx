@@ -1,4 +1,3 @@
-// src/app/components/SummaryTab.tsx
 import { CircularProgress } from "@mui/material";
 import {
   BarChart,
@@ -11,217 +10,205 @@ import {
   PieChart,
   Pie,
   Cell,
-  ResponsiveContainer,
-  LineChart,
-  Line
 } from "recharts";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
 
-interface Props {
+export function SummaryTab({
+  darkMode,
+  isLoading,
+}: {
   darkMode: boolean;
   isLoading: boolean;
-  places: Array<{
-    id: string;
-    details: {
-      name: string;
-      rating: number;
-      user_ratings_total: number;
-      formatted_address: string;
-    };
-  }>;
-}
-
-export function SummaryTab({ darkMode, isLoading, places }: Props) {
+}) {
   if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <CircularProgress />
-      </div>
-    );
+    return <CircularProgress />;
   }
 
-  const ratingDistribution = places
-    .filter(place => place.details && place.details.rating) // Filter out places without details
-    .map(place => ({
-      name: place.details.name || 'Unknown',
-      rating: place.details.rating || 0,
-      reviews: place.details.user_ratings_total || 0
-    }));
+  const locations = [
+    {
+      id: "1",
+      name: "Location 1",
+      lat: 51.505,
+      lng: -0.09,
+      metrics: { positive: 85, neutral: 10, negative: 5 },
+    },
+    {
+      id: "2",
+      name: "Location 2",
+      lat: 51.515,
+      lng: -0.1,
+      metrics: { positive: 70, neutral: 20, negative: 10 },
+    },
+    {
+      id: "3",
+      name: "Location 3",
+      lat: 51.525,
+      lng: -0.11,
+      metrics: { positive: 90, neutral: 5, negative: 5 },
+    },
+  ];
 
-  const totalReviews = places.reduce(
-    (sum, place) => sum + (place.details?.user_ratings_total || 0),
-    0
-  );
+  const barData = locations.map((location) => ({
+    name: location.name,
+    Positive: location.metrics.positive,
+    Neutral: location.metrics.neutral,
+    Negative: location.metrics.negative,
+  }));
 
-  const averageRating = places.length > 0
-    ? places.reduce((sum, place) => sum + (place.details?.rating || 0), 0) / places.length
-    : 0;
+  const pieData = [
+    { name: "English", value: 70 },
+    { name: "Spanish", value: 20 },
+    { name: "French", value: 10 },
+  ];
 
-  const RATING_COLORS = ['#2196f3', '#4caf50', '#ff9800', '#f44336'];
-  const darkModeClass = darkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900';
-
-  // Helper function to safely format numbers
-  const formatNumber = (num?: number) => {
-    return (num ?? 0).toLocaleString();
-  };
-
-  // Helper function to safely get rating
-  const getRating = (rating?: number) => {
-    return rating ? `${rating} ★` : 'N/A';
-  };
+  const COLORS = ["#2196f3", "#ff9800", "#9c27b0"];
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <StatCard
-          title="Total Locations"
-          value={places.length}
-          icon="🏢"
+    <div
+      className={`bg-white rounded-lg shadow p-6 ${
+        darkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"
+      }`}
+    >
+      <div className="mt-6">
+        <h3 className="text-xl font-bold mb-4">Locations</h3>
+        <MapContainer
+          center={[51.505, -0.09]}
+          zoom={13}
+          style={{ height: "400px", width: "100%" }}
+        >
+          <TileLayer
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          />
+          {locations.map((location) => (
+            <Marker key={location.id} position={[location.lat, location.lng]}>
+              <Popup>
+                <div>
+                  <h4>{location.name}</h4>
+                  <p>Positive: {location.metrics.positive}%</p>
+                  <p>Neutral: {location.metrics.neutral}%</p>
+                  <p>Negative: {location.metrics.negative}%</p>
+                </div>
+              </Popup>
+            </Marker>
+          ))}
+        </MapContainer>
+      </div>
+      <h2 className="text-2xl font-bold mb-4">Feedback Summary</h2>
+      <p>
+        Here’s a quick overview of recurring themes and insights from customer
+        feedback.
+      </p>
+
+      {/* Example insights */}
+      <div className="grid grid-cols-2 gap-6 mt-6">
+        <InsightCard
+          title="Common Praise"
+          description="Customers love the fast delivery times and friendly customer support!"
+          icon="👍"
           darkMode={darkMode}
         />
-        <StatCard
-          title="Average Rating"
-          value={`${averageRating.toFixed(1)} ★`}
-          icon="⭐"
-          darkMode={darkMode}
-        />
-        <StatCard
-          title="Total Reviews"
-          value={formatNumber(totalReviews)}
-          icon="📝"
+        <InsightCard
+          title="Recurring Complaint"
+          description="Some customers mentioned difficulty in navigating the mobile app."
+          icon="⚠️"
           darkMode={darkMode}
         />
       </div>
 
-      {places.length > 0 ? (
-        <>
-          <div className={`grid grid-cols-1 lg:grid-cols-2 gap-6`}>
-            <div className={`p-6 rounded-lg shadow ${darkModeClass}`}>
-              <h3 className="text-xl font-bold mb-4">Ratings by Location</h3>
-              <div className="h-[300px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={ratingDistribution}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis 
-                      dataKey="name" 
-                      angle={-45}
-                      textAnchor="end"
-                      height={80}
-                      tick={{ fontSize: 12 }}
-                    />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Bar dataKey="rating" fill="#2196f3" name="Rating" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-
-            <div className={`p-6 rounded-lg shadow ${darkModeClass}`}>
-              <h3 className="text-xl font-bold mb-4">Review Volume by Location</h3>
-              <div className="h-[300px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={ratingDistribution}
-                      dataKey="reviews"
-                      nameKey="name"
-                      cx="50%"
-                      cy="50%"
-                      outerRadius={100}
-                      label={({ name, percent }) => 
-                        `${name}: ${(percent * 100).toFixed(0)}%`
-                      }
-                    >
-                      {ratingDistribution.map((entry, index) => (
-                        <Cell 
-                          key={`cell-${index}`}
-                          fill={RATING_COLORS[index % RATING_COLORS.length]}
-                        />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-          </div>
-
-          <div className={`rounded-lg shadow ${darkModeClass}`}>
-            <div className="p-6">
-              <h3 className="text-xl font-bold mb-4">Location Details</h3>
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead>
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                        Name
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                        Address
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                        Rating
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                        Reviews
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-200">
-                    {places.map((place) => (
-                      <tr key={place.id}>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          {place.details?.name || 'N/A'}
-                        </td>
-                        <td className="px-6 py-4">
-                          {place.details?.formatted_address || 'N/A'}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          {getRating(place.details?.rating)}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          {formatNumber(place.details?.user_ratings_total)}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </>
-      ) : (
-        <div className="text-center py-12 bg-gray-50 rounded-lg">
-          <p className="text-gray-500">No locations found. Try adding some Place IDs.</p>
+      <div className="grid grid-cols-2 gap-6 mt-6">
+        <div
+          className={`rounded-lg shadow p-6 ${
+            darkMode ? "bg-gray-700" : "bg-white"
+          }`}
+        >
+          <h3 className="text-xl font-bold mb-4">Sentiment Analysis</h3>
+          <BarChart
+            width={500}
+            height={300}
+            data={barData}
+            margin={{
+              top: 5,
+              right: 30,
+              left: 20,
+              bottom: 5,
+            }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            <Bar dataKey="Positive" fill="#4caf50" />
+            <Bar dataKey="Neutral" fill="#ffeb3b" />
+            <Bar dataKey="Negative" fill="#f44336" />
+          </BarChart>
         </div>
-      )}
+        <div
+          className={`rounded-lg shadow p-6 ${
+            darkMode ? "bg-gray-700" : "bg-white"
+          }`}
+        >
+          <h3 className="text-xl font-bold mb-4">Top Languages</h3>
+          <PieChart width={400} height={400}>
+            <Pie
+              data={pieData}
+              cx={200}
+              cy={200}
+              labelLine={false}
+              label={({ name, percent }) =>
+                `${name} ${(percent * 100).toFixed(0)}%`
+              }
+              outerRadius={80}
+              fill="#8884d8"
+              dataKey="value"
+            >
+              {pieData.map((entry, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={COLORS[index % COLORS.length]}
+                />
+              ))}
+            </Pie>
+            <Tooltip />
+          </PieChart>
+        </div>
+      </div>
     </div>
   );
 }
 
-function StatCard({ 
-  title, 
-  value, 
-  icon, 
-  darkMode 
-}: { 
-  title: string; 
-  value: string | number; 
-  icon: string;
+function InsightCard({
+  title,
+  description,
+  icon,
+  darkMode,
+}: {
+  title: string;
+  description: string;
+  icon?: string;
   darkMode: boolean;
 }) {
   return (
-    <div className={`p-6 rounded-lg shadow ${
-      darkMode ? 'bg-gray-800' : 'bg-white'
-    }`}>
-      <div className="flex items-center space-x-3">
-        <span className="text-2xl">{icon}</span>
-        <div>
-          <p className="text-sm text-gray-500">{title}</p>
-          <p className="text-2xl font-bold mt-1">{value}</p>
-        </div>
+    <div
+      className={`border-l-4 p-4 rounded-lg shadow ${
+        darkMode ? "bg-gray-700 border-blue-500" : "bg-blue-50 border-blue-500"
+      }`}
+    >
+      <div className="flex items-center mb-2">
+        <span className="text-3xl mr-3">{icon}</span>
+        <h3
+          className={`font-bold text-lg ${
+            darkMode ? "text-white" : "text-blue-600"
+          }`}
+        >
+          {title}
+        </h3>
       </div>
+      <p className={`${darkMode ? "text-gray-300" : "text-gray-600"}`}>
+        {description}
+      </p>
     </div>
   );
 }
