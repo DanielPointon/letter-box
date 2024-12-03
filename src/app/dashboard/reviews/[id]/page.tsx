@@ -14,7 +14,7 @@ export default function ReviewDetails() {
     // Simulating API call
     setTimeout(() => {
       setResponse(
-        "Thank you for your feedback! We’re glad you enjoyed your experience and will strive to make it even better."
+        "Thank you for your feedback! We're glad you enjoyed your experience and will strive to make it even better."
       );
       setAiLoading(false);
     }, 2000);
@@ -55,7 +55,7 @@ export default function ReviewDetails() {
           <textarea
             value={response}
             onChange={(e) => setResponse(e.target.value)}
-            className="w-full h-32 border-gray-300 rounded p-2 focus:ring-2 focus:ring-blue-500"
+            className="w-full h-32 border-gray-300 rounded p-2 focus:ring-2 focus:ring-blue-500 text-gray-900"
             placeholder="Write your response..."
           />
 
