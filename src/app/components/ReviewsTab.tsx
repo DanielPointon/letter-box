@@ -1,6 +1,6 @@
+import React, { useState } from "react";
 import { CircularProgress } from "@mui/material";
 import Link from "next/link";
-import { useState } from "react";
 import Image from "next/image";
 
 type Language = "English" | "Spanish" | "French";
@@ -10,6 +10,7 @@ interface User {
   username: string;
   avatarUrl: string;
 }
+
 interface Review {
   userId: string;
   id: string;
@@ -18,12 +19,15 @@ interface Review {
   user: User;
   imageUrl?: string;
   responded: boolean;
+  isTranslating?: boolean;
+  originalText?: string;
 }
 
 const MOCK_REVIEWS: Review[] = [
   {
     id: "1",
     text: "Great service!",
+    originalText: "Great service!", // to allow this demo to run on non-gemini-nano machines
     lang: "English",
     userId: "1",
     user: {
@@ -45,6 +49,7 @@ const MOCK_REVIEWS: Review[] = [
       avatarUrl: "https://via.placeholder.com/40",
     },
     responded: true,
+    originalText: "My favourite product!",
   },
   {
     id: "3",
@@ -58,57 +63,77 @@ const MOCK_REVIEWS: Review[] = [
     },
     imageUrl: "https://via.placeholder.com/150",
     responded: false,
+    originalText: "Very good product!",
   },
 ];
 
-export function ReviewsTab({
-  darkMode,
-  isLoading,
-}: {
+export const ReviewsTab: React.FC<{
   darkMode: boolean;
   isLoading: boolean;
-}) {
+}> = ({ darkMode, isLoading }) => {
   const [isReviewsLoading, setIsReviewsLoading] = useState(false);
   const [reviews, setReviews] = useState<Review[]>(MOCK_REVIEWS);
   const [filter, setFilter] = useState("all");
+  const [selectedLanguage, setSelectedLanguage] = useState<Language>("English");
 
   if (isLoading) {
     return (
-      <div
-        className={`bg-white rounded-lg shadow p-6 ${
-          darkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"
-        }`}
-      >
+      <div className={`bg-white rounded-lg shadow p-6 ${darkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"}`}>
         <CircularProgress />
       </div>
     );
   }
 
-  const handleLanguageChange = async (
-    event: React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    const selectedLanguage = event.target.value;
-    setIsReviewsLoading(true);
+  const translateReview = async (reviewId: string) => {
+    setReviews(prevReviews =>
+      prevReviews.map(review =>
+        review.id === reviewId
+          ? { ...review, isTranslating: true, originalText: review.originalText || review.text }
+          : review
+      )
+    );
 
-    // Mock API call with timeout
-    setTimeout(() => {
-      const translatedReviews = reviews.map((review) => ({
-        ...review,
-        text: `Translated (${selectedLanguage}): ${review.text}`,
-      }));
-      setReviews(translatedReviews);
-      setIsReviewsLoading(false);
-    }, 1000); // Simulate 1 second API call
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    setReviews(prevReviews =>
+      prevReviews.map(review =>
+        review.id === reviewId
+          ? {
+              ...review,
+              isTranslating: false,
+              text: `Translated to ${selectedLanguage}: ${review.originalText}`,
+            }
+          : review
+      )
+    );
   };
 
-  const fetchReviews = () => {
+  const handleLanguageChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedLanguage(event.target.value as Language);
+  };
+
+  const translateAllReviews = async () => {
     setIsReviewsLoading(true);
-    // Mock API call with timeout
-    setTimeout(() => {
-      // Here you would fetch reviews based on placeId
-      setReviews(MOCK_REVIEWS); // Replace with fetched reviews
-      setIsReviewsLoading(false);
-    }, 1000); // Simulate 1 second API call
+    
+    setReviews(prevReviews =>
+      prevReviews.map(review => ({
+        ...review,
+        isTranslating: true,
+        originalText: review.originalText || review.text,
+      }))
+    );
+
+    await new Promise(resolve => setTimeout(resolve, 1500));
+
+    setReviews(prevReviews =>
+      prevReviews.map(review => ({
+        ...review,
+        isTranslating: false,
+        text: `Translated to ${selectedLanguage}: ${review.originalText}`,
+      }))
+    );
+
+    setIsReviewsLoading(false);
   };
 
   const handleFilterChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -122,22 +147,35 @@ export function ReviewsTab({
   });
 
   return (
-    <div
-      className={`bg-white rounded-lg shadow p-6 ${
-        darkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"
-      }`}
-    >
+    <div className={`bg-white rounded-lg shadow p-6 ${darkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"}`}>
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-2xl font-bold">Customer Reviews</h2>
         <div className="flex space-x-4">
-          <select
-            className="border-gray-300 rounded p-2"
-            onChange={handleLanguageChange}
-          >
-            <option value="English">Translate to English</option>
-            <option value="Spanish">Translate to Spanish</option>
-            <option value="French">Translate to French</option>
-          </select>
+          <div className="flex items-center space-x-2">
+            <select
+              className="border-gray-300 rounded p-2"
+              onChange={handleLanguageChange}
+              value={selectedLanguage}
+            >
+              <option value="English">English</option>
+              <option value="Spanish">Spanish</option>
+              <option value="French">French</option>
+            </select>
+            <button
+              onClick={translateAllReviews}
+              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded transition-colors duration-200"
+              disabled={isReviewsLoading}
+            >
+              {isReviewsLoading ? (
+                <span className="flex items-center">
+                  <CircularProgress size={20} className="mr-2" />
+                  Translating...
+                </span>
+              ) : (
+                'Translate All'
+              )}
+            </button>
+          </div>
           <select
             className="border-gray-300 rounded p-2"
             onChange={handleFilterChange}
@@ -149,59 +187,57 @@ export function ReviewsTab({
         </div>
       </div>
 
-      <div className="flex items-center mb-4">
-        <button
-          className="bg-blue-500 text-white px-4 py-2 rounded"
-          onClick={fetchReviews}
-        >
-          Fetch Reviews
-        </button>
-      </div>
-
       <ul className="space-y-4">
-        {isReviewsLoading ? (
-          <CircularProgress />
-        ) : (
-          filteredReviews.map((review) => (
-            <li
-              key={review.id}
-              className={`p-4 rounded-lg shadow flex flex-col hover:bg-gray-100 ${
-                darkMode ? "bg-gray-700" : "bg-gray-50"
-              }`}
-            >
-              <div className="flex items-center mb-4">
-                <Image
-                  width={40}
-                  height={40}
-                  src={review.user.avatarUrl}
-                  alt={review.user.username}
-                  className="w-10 h-10 rounded-full mr-4"
-                />
-                <div>
-                  <div className="font-medium">{review.text}</div>
-                  <div className="text-sm">
-                    {review.user.username} - Original Language: {review.lang}
-                  </div>
+        {filteredReviews.map((review) => (
+          <li
+            key={review.id}
+            className={`p-4 rounded-lg shadow flex flex-col hover:bg-gray-100 ${
+              darkMode ? "bg-gray-700" : "bg-gray-50"
+            } transition-all duration-300`}
+          >
+            <div className="flex items-center mb-4">
+              <Image
+                width={40}
+                height={40}
+                src={review.user.avatarUrl}
+                alt={review.user.username}
+                className="w-10 h-10 rounded-full mr-4"
+              />
+              <div className="flex-grow">
+                <div className={`font-medium ${review.isTranslating ? 'animate-pulse' : 'transition-opacity duration-300'}`}>
+                  {review.isTranslating ? 'Translating...' : review.text}
+                </div>
+                <div className="text-sm">
+                  {review.user.username} - Original Language: {review.lang}
+                </div>
+                <div className="flex items-center space-x-4 mt-2">
                   <Link href={`/dashboard/reviews/${review.id}`}>
-                    <div className="text-blue-600 hover:underline">Respond</div>
+                    <span className="text-blue-600 hover:underline">Respond</span>
                   </Link>
+                  <button
+                    onClick={() => translateReview(review.id)}
+                    className="text-green-600 hover:text-green-700 text-sm"
+                    disabled={review.isTranslating}
+                  >
+                    {review.isTranslating ? 'Translating...' : 'Translate'}
+                  </button>
                 </div>
               </div>
-              {review.imageUrl && (
-                <div className="mt-4">
-                  <Image
-                    width={150}
-                    height={150}
-                    src={review.imageUrl}
-                    alt="Review Image"
-                    className="rounded-lg"
-                  />
-                </div>
-              )}
-            </li>
-          ))
-        )}
+            </div>
+            {review.imageUrl && (
+              <div className="mt-4">
+                <Image
+                  width={150}
+                  height={150}
+                  src={review.imageUrl}
+                  alt="Review Image"
+                  className="rounded-lg"
+                />
+              </div>
+            )}
+          </li>
+        ))}
       </ul>
     </div>
   );
-}
+};
