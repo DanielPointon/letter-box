@@ -4,6 +4,7 @@ import "./globals.css";
 import { Navbar, NavbarBrand, NavbarContent } from "@nextui-org/navbar";
 import { Sparkles } from "lucide-react";
 import Link from "next/link";
+import { ReviewsProvider } from "@/context/reviewsContext";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -65,7 +66,9 @@ export default function RootLayout({
         </nav>
 
         <main className="pt-28 min-h-screen bg-gray-900">
-          {children}
+          <ReviewsProvider>
+            {children}
+          </ReviewsProvider>
         </main>
       </body>
     </html>
