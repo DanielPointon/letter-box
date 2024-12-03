@@ -11,6 +11,7 @@ import {
   PieChart,
   Pie,
   Cell,
+  ResponsiveContainer
 } from "recharts";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
@@ -60,6 +61,24 @@ interface TypewriterBulletPointProps {
   completedIndices: Set<number>;
 }
 
+// Chart theme configuration
+const chartTheme = {
+  colors: {
+    positive: "#4ade80",
+    neutral: "#fbbf24",
+    negative: "#f87171",
+    pieColors: ["#60a5fa", "#818cf8", "#a78bfa"],
+    background: "#1e293b",
+    text: "#e2e8f0",
+    grid: "#334155",
+  },
+  fontSize: {
+    label: 12,
+    title: 14,
+  }
+};
+
+// Custom hook for typewriter effect
 const useTypewriter = (
   text: string,
   delay = 50,
@@ -118,8 +137,8 @@ const TypewriterBulletPoint: React.FC<TypewriterBulletPointProps> = ({
       className="mb-2 flex items-start opacity-0 transition-opacity duration-300"
       style={{ opacity: isVisible ? 1 : 0 }}
     >
-      <span className="mr-2 text-lg leading-none text-blue-400">•</span>
-      <span className="flex-1 text-gray-300">{textToShow}</span>
+      <span className="mr-2 text-lg leading-none">•</span>
+      <span className="flex-1">{textToShow}</span>
     </li>
   );
 };
@@ -169,25 +188,23 @@ const InsightCard: React.FC<InsightCardProps> = ({ title, points, icon }) => {
   return (
     <div
       ref={ref}
-      className="border-l-4 p-6 rounded-lg shadow-lg transition-all duration-300 bg-gray-800/50 backdrop-blur-lg border-blue-500/30"
+      className="rounded-lg bg-slate-800 p-6 shadow-lg"
     >
       <div className="flex items-center mb-4">
         <span className="text-3xl mr-3">{icon}</span>
-        <h3 className="font-bold text-xl text-blue-400">
-          {title}
-        </h3>
+        <h3 className="text-xl font-bold text-slate-200">{title}</h3>
       </div>
 
       <div className="min-h-[200px]">
         {isLoading ? (
           <div className="flex items-center justify-center h-full py-8">
             <div className="relative">
-              <div className="w-8 h-8 border-4 border-gray-700 rounded-full"></div>
+              <div className="w-8 h-8 border-4 border-slate-600 rounded-full"></div>
               <div className="absolute top-0 left-0 w-8 h-8 border-4 border-blue-500 rounded-full border-t-transparent animate-spin"></div>
             </div>
           </div>
         ) : (
-          <ul className="space-y-3 transition-opacity duration-500">
+          <ul className="space-y-3 text-slate-300">
             {points.map((point, index) => (
               <TypewriterBulletPoint
                 key={index}
@@ -207,12 +224,29 @@ const InsightCard: React.FC<InsightCardProps> = ({ title, points, icon }) => {
   );
 };
 
+// Custom tooltip component for charts
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-slate-800 border border-slate-700 p-2 rounded shadow-lg">
+        <p className="text-slate-200 font-medium">{label}</p>
+        {payload.map((entry: any, index: number) => (
+          <p key={index} style={{ color: entry.color }}>
+            {`${entry.name}: ${entry.value}%`}
+          </p>
+        ))}
+      </div>
+    );
+  }
+  return null;
+};
+
 export const SummaryTab: React.FC<SummaryTabProps> = ({ isLoading }) => {
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-64 bg-gray-900/50 backdrop-blur-lg rounded-lg shadow-2xl border border-gray-800">
+      <div className="flex justify-center items-center h-64">
         <div className="relative">
-          <div className="w-12 h-12 border-4 border-gray-700 rounded-full"></div>
+          <div className="w-12 h-12 border-4 border-slate-600 rounded-full"></div>
           <div className="absolute top-0 left-0 w-12 h-12 border-4 border-blue-500 rounded-full border-t-transparent animate-spin"></div>
         </div>
       </div>
@@ -256,8 +290,6 @@ export const SummaryTab: React.FC<SummaryTabProps> = ({ isLoading }) => {
     { name: "French", value: 10 },
   ];
 
-  const COLORS = ["#60A5FA", "#F59E0B", "#8B5CF6"];
-
   const commonPraisePoints: string[] = [
     "Check-in process is consistently quick and efficient",
     "Staff receives excellent reviews for their hospitality",
@@ -273,43 +305,41 @@ export const SummaryTab: React.FC<SummaryTabProps> = ({ isLoading }) => {
   ];
 
   return (
-    <div className="bg-gray-900/50 backdrop-blur-lg rounded-lg shadow-2xl p-6 border border-gray-800">
-      <div className="mt-6">
-        <h3 className="text-xl font-bold mb-4 text-gray-200">Locations</h3>
-        <div className="rounded-lg overflow-hidden border border-gray-800">
-          <MapContainer
-            center={[51.505, -0.09]}
-            zoom={13}
-            style={{ height: "400px", width: "100%" }}
-            className="map-dark" // Add custom CSS for dark theme map
-          >
-            <TileLayer
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            />
-            {locations.map((location) => (
-              <Marker key={location.id} position={[location.lat, location.lng]}>
-                <Popup className="dark-popup">
-                  <div className="text-gray-800">
-                    <h4 className="font-bold">{location.name}</h4>
-                    <p>Positive: {location.metrics.positive}%</p>
-                    <p>Neutral: {location.metrics.neutral}%</p>
-                    <p>Negative: {location.metrics.negative}%</p>
-                  </div>
-                </Popup>
-              </Marker>
-            ))}
-          </MapContainer>
-        </div>
+    <div className="bg-slate-900 text-slate-200 rounded-lg shadow-xl p-6">
+      <div className="mt-6 mb-8">
+        <h3 className="text-xl font-bold mb-4">Locations</h3>
+        <MapContainer
+          center={[51.505, -0.09]}
+          zoom={13}
+          style={{ height: "400px", width: "100%" }}
+          className="rounded-lg shadow-lg"
+        >
+          <TileLayer
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          />
+          {locations.map((location) => (
+            <Marker key={location.id} position={[location.lat, location.lng]}>
+              <Popup>
+                <div className="p-2">
+                  <h4 className="font-bold">{location.name}</h4>
+                  <p>Positive: {location.metrics.positive}%</p>
+                  <p>Neutral: {location.metrics.neutral}%</p>
+                  <p>Negative: {location.metrics.negative}%</p>
+                </div>
+              </Popup>
+            </Marker>
+          ))}
+        </MapContainer>
       </div>
 
-      <h2 className="text-2xl font-bold mb-4 mt-8 text-gray-200">Feedback Summary</h2>
-      <p className="mb-6 text-gray-400">
+      <h2 className="text-2xl font-bold mb-4">Feedback Summary</h2>
+      <p className="mb-6 text-slate-300">
         Here's a quick overview of recurring themes and insights from customer
         feedback.
       </p>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <InsightCard
           title="Common Praise"
           points={commonPraisePoints}
@@ -323,68 +353,55 @@ export const SummaryTab: React.FC<SummaryTabProps> = ({ isLoading }) => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="rounded-lg shadow-xl p-6 bg-gray-800/50 backdrop-blur-lg border border-gray-700">
-          <h3 className="text-xl font-bold mb-4 text-gray-200">Sentiment Analysis</h3>
-          <BarChart
-            width={500}
-            height={300}
-            data={barData}
-            margin={{
-              top: 5,
-              right: 30,
-              left: 20,
-              bottom: 5,
-            }}
-          >
-            <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-            <XAxis dataKey="name" stroke="#9CA3AF" />
-            <YAxis stroke="#9CA3AF" />
-            <Tooltip 
-              contentStyle={{ 
-                backgroundColor: '#1F2937',
-                border: '1px solid #374151',
-                borderRadius: '0.375rem',
-                color: '#E5E7EB'
-              }}
-            />
-            <Legend />
-            <Bar dataKey="Positive" fill="#60A5FA" />
-            <Bar dataKey="Neutral" fill="#F59E0B" />
-            <Bar dataKey="Negative" fill="#EF4444" />
-          </BarChart>
+        <div className="rounded-lg bg-slate-800 p-6 shadow-lg">
+          <h3 className="text-xl font-bold mb-6 text-slate-200">Sentiment Analysis</h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={barData}>
+              <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.colors.grid} />
+              <XAxis 
+                dataKey="name" 
+                stroke={chartTheme.colors.text}
+                tick={{ fill: chartTheme.colors.text }}
+              />
+              <YAxis 
+                stroke={chartTheme.colors.text}
+                tick={{ fill: chartTheme.colors.text }}
+              />
+              <Tooltip content={<CustomTooltip />} />
+              <Legend 
+                wrapperStyle={{ color: chartTheme.colors.text }}
+              />
+              <Bar dataKey="Positive" fill={chartTheme.colors.positive} />
+              <Bar dataKey="Neutral" fill={chartTheme.colors.neutral} />
+              <Bar dataKey="Negative" fill={chartTheme.colors.negative} />
+            </BarChart>
+          </ResponsiveContainer>
         </div>
 
-        <div className="rounded-lg shadow-xl p-6 bg-gray-800/50 backdrop-blur-lg border border-gray-700">
-          <h3 className="text-xl font-bold mb-4 text-gray-200">Top Languages</h3>
-          <PieChart width={400} height={400}>
-            <Pie
-              data={pieData}
-              cx={200}
-              cy={200}
-              labelLine={false}
-              label={({ name, percent }) => (
-                `${name} ${(percent * 100).toFixed(0)}%`
-              )}
-              outerRadius={80}
-              fill="#8884d8"
-              dataKey="value"
-            >
-              {pieData.map((entry, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={COLORS[index % COLORS.length]}
-                />
-              ))}
-            </Pie>
-            <Tooltip
-              contentStyle={{
-                backgroundColor: '#1F2937',
-                border: '1px solid #374151',
-                borderRadius: '0.375rem',
-                color: '#E5E7EB'
-              }}
-            />
-          </PieChart>
+        <div className="rounded-lg bg-slate-800 p-6 shadow-lg">
+          <h3 className="text-xl font-bold mb-6 text-slate-200">Language Distribution</h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <PieChart>
+              <Pie
+                data={pieData}
+                cx="50%"
+                cy="50%"
+                labelLine={false}
+                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                outerRadius={80}
+                fill="#8884d8"
+                dataKey="value"
+              >
+                {pieData.map((entry, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={chartTheme.colors.pieColors[index % chartTheme.colors.pieColors.length]}
+                  />
+                ))}
+              </Pie>
+              <Tooltip content={<CustomTooltip />} />
+            </PieChart>
+          </ResponsiveContainer>
         </div>
       </div>
     </div>
