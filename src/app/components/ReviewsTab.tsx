@@ -92,8 +92,8 @@ export const ReviewsTab: React.FC<{
 
   if (isLoading) {
     return (
-      <div className="bg-white rounded-lg shadow p-6 bg-white text-gray-900">
-        <CircularProgress />
+      <div className="bg-gray-900/50 rounded-lg shadow-2xl p-6 backdrop-blur-lg border border-gray-800">
+        <CircularProgress className="text-blue-400" />
       </div>
     );
   }
@@ -171,22 +171,22 @@ export const ReviewsTab: React.FC<{
       <Star
         key={index}
         className={`w-4 h-4 ${
-          index < rating ? "text-yellow-400 fill-yellow-400" : "text-gray-300"
+          index < rating ? "text-yellow-400 fill-yellow-400" : "text-gray-600"
         }`}
       />
     ));
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-xl p-6 bg-gray-800 text-white bg-white text-gray-900">
+    <div className="bg-gray-900/50 rounded-xl shadow-2xl p-6 backdrop-blur-lg border border-gray-800">
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 space-y-4 md:space-y-0">
-        <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 text-transparent bg-clip-text">
+        <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 text-transparent bg-clip-text">
           Customer Reviews
         </h2>
         <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
           <div className="flex items-center space-x-2">
             <select
-              className="border rounded-lg p-2 bg-white border-gray-300">
+              className="bg-gray-800 border border-gray-700 rounded-lg p-2 text-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               onChange={handleLanguageChange}
               value={selectedLanguage}
             >
@@ -196,17 +196,17 @@ export const ReviewsTab: React.FC<{
             </select>
             <button
               onClick={translateAllReviews}
-              className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-4 py-2 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl flex items-center space-x-2"
+              className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white px-4 py-2 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl flex items-center space-x-2 disabled:opacity-50"
               disabled={isReviewsLoading}
             >
               {isReviewsLoading ? (
-                <CircularProgress size={20} className="mr-2" />
+                <CircularProgress size={20} className="mr-2 text-white" />
               ) : null}
               <span>Translate All</span>
             </button>
           </div>
           <select
-            className="border rounded-lg p-2 bg-gray-700 border-gray-600 bg-white border-gray-300"
+            className="bg-gray-800 border border-gray-700 rounded-lg p-2 text-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             onChange={handleFilterChange}
           >
             <option value="all">All Reviews</option>
@@ -220,8 +220,8 @@ export const ReviewsTab: React.FC<{
         {filteredReviews.map((review) => (
           <div
             key={review.id}
-            className={`p-6 rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl transform hover:-translate-y-1 bg-gray-50 border ${
-              review.responded ? "border-green-500" : "border-yellow-500"
+            className={`p-6 rounded-xl shadow-xl transition-all duration-300 hover:shadow-2xl transform hover:-translate-y-1 bg-gray-800/50 backdrop-blur-lg border ${
+              review.responded ? "border-green-500/30" : "border-yellow-500/30"
             }`}
           >
             <div className="flex items-start justify-between">
@@ -232,43 +232,43 @@ export const ReviewsTab: React.FC<{
                     height={48}
                     src={review.user.avatarUrl}
                     alt={review.user.username}
-                    className="rounded-full"
+                    className="rounded-full ring-2 ring-gray-700"
                   />
                   <div
                     className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full ${
                       review.responded ? "bg-green-500" : "bg-yellow-500"
-                    } border-2 border-white`}
+                    } ring-2 ring-gray-900`}
                   />
                 </div>
                 <div className="flex-grow">
                   <div className="flex items-center space-x-2 mb-1">
-                    <h3 className="font-semibold text-lg">
+                    <h3 className="font-semibold text-lg text-gray-200">
                       {review.user.username}
                     </h3>
                     <div className="flex items-center">
                       {renderStars(review.rating)}
                     </div>
                   </div>
-                  <div className="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400 mb-2">
+                  <div className="flex items-center space-x-2 text-sm text-gray-400 mb-2">
                     <span>{review.lang}</span>
                     <span>•</span>
                     <Clock className="w-4 h-4" />
                     <span>{review.responseTime}</span>
                     <span>•</span>
                     {review.responded ? (
-                      <span className="flex items-center text-green-500">
+                      <span className="flex items-center text-green-400">
                         <CheckCircle2 className="w-4 h-4 mr-1" />
                         Responded
                       </span>
                     ) : (
-                      <span className="flex items-center text-yellow-500">
+                      <span className="flex items-center text-yellow-400">
                         <MessagesSquare className="w-4 h-4 mr-1" />
                         Awaiting Response
                       </span>
                     )}
                   </div>
                   <p
-                    className={`text-lg mb-4 ${
+                    className={`text-lg mb-4 text-gray-300 ${
                       review.isTranslating ? "animate-pulse" : ""
                     }`}
                   >
@@ -285,7 +285,7 @@ export const ReviewsTab: React.FC<{
                   height={150}
                   src={review.imageUrl}
                   alt="Review Image"
-                  className="rounded-lg shadow-md"
+                  className="rounded-lg shadow-md ring-1 ring-gray-700"
                 />
               </div>
             )}
@@ -293,14 +293,14 @@ export const ReviewsTab: React.FC<{
             <div className="mt-4 flex items-center space-x-4">
               <Link
                 href={`/dashboard/reviews/${review.id}`}
-                className="inline-flex items-center px-4 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 shadow-md hover:shadow-lg"
+                className="inline-flex items-center px-4 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-500 hover:to-indigo-500 transition-all duration-200 shadow-md hover:shadow-lg"
               >
                 <span>Respond</span>
                 <ArrowUpRight className="w-4 h-4 ml-2" />
               </Link>
               <button
                 onClick={() => translateReview(review.id)}
-                className={`px-4 py-2 rounded-lg transition-all duration-200 bg-white hover:bg-gray-100 text-sm font-medium shadow-md hover:shadow-lg flex items-center`}
+                className="px-4 py-2 rounded-lg transition-all duration-200 bg-gray-700 hover:bg-gray-600 text-sm font-medium shadow-md hover:shadow-lg text-gray-200 flex items-center disabled:opacity-50"
                 disabled={review.isTranslating}
               >
                 {review.isTranslating ? "Translating..." : "Translate"}

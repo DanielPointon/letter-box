@@ -26,17 +26,17 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen  text-gray-900">
+    <div className="min-h-screen bg-gray-900">
       {/* Place IDs Input */}
-      <div className="flex items-center justify-center my-4">
+      <div className="flex items-center justify-center my-4 px-4">
         <input
           type="text"
-          className="border-gray-300 rounded p-2 mr-2"
+          className="bg-gray-800/50 border-gray-700 text-gray-200 rounded-lg p-2 mr-2 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent backdrop-blur-lg w-full max-w-md"
           placeholder="Enter Place IDs (comma separated)"
           onChange={handlePlaceIdsChange}
         />
         <button
-          className="bg-blue-500 text-white px-4 py-2 rounded"
+          className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white px-4 py-2 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl"
           onClick={fetchData}
         >
           Fetch Data
@@ -44,23 +44,23 @@ export default function Dashboard() {
       </div>
 
       {/* Tab Navigation */}
-      <div className="bg-white shadow-md  bg-white text-gray-900">
+      <div className="bg-gray-800/50 backdrop-blur-lg shadow-xl border-b border-gray-700">
         <div className="flex justify-center space-x-8 text-lg">
           <button
-            className={`py-3 px-6 font-medium transition ${
+            className={`py-3 px-6 font-medium transition-all duration-200 ${
               activeTab === "summary"
-                ? "border-b-4 border-blue-500 text-blue-600"
-                : "text-gray-600 hover:text-blue-500"
+                ? "border-b-4 border-blue-500 text-blue-400"
+                : "text-gray-400 hover:text-blue-400"
             }`}
             onClick={() => setActiveTab("summary")}
           >
             Summary
           </button>
           <button
-            className={`py-3 px-6 font-medium transition ${
+            className={`py-3 px-6 font-medium transition-all duration-200 ${
               activeTab === "reviews"
-                ? "border-b-4 border-blue-500 text-blue-600"
-                : "text-gray-600 hover:text-blue-500"
+                ? "border-b-4 border-blue-500 text-blue-400"
+                : "text-gray-400 hover:text-blue-400"
             }`}
             onClick={() => setActiveTab("reviews")}
           >

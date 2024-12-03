@@ -118,8 +118,8 @@ const TypewriterBulletPoint: React.FC<TypewriterBulletPointProps> = ({
       className="mb-2 flex items-start opacity-0 transition-opacity duration-300"
       style={{ opacity: isVisible ? 1 : 0 }}
     >
-      <span className="mr-2 text-lg leading-none">•</span>
-      <span className="flex-1">{textToShow}</span>
+      <span className="mr-2 text-lg leading-none text-blue-400">•</span>
+      <span className="flex-1 text-gray-300">{textToShow}</span>
     </li>
   );
 };
@@ -169,14 +169,11 @@ const InsightCard: React.FC<InsightCardProps> = ({ title, points, icon }) => {
   return (
     <div
       ref={ref}
-      className="border-l-4 p-6 rounded-lg shadow-lg transition-all duration-300 bg-blue-50 border-blue-500 text-gray-900"
+      className="border-l-4 p-6 rounded-lg shadow-lg transition-all duration-300 bg-gray-800/50 backdrop-blur-lg border-blue-500/30"
     >
       <div className="flex items-center mb-4">
         <span className="text-3xl mr-3">{icon}</span>
-        <h3
-          className={`font-bold text-xl text-blue-600"
-          }`}
-        >
+        <h3 className="font-bold text-xl text-blue-400">
           {title}
         </h3>
       </div>
@@ -185,12 +182,12 @@ const InsightCard: React.FC<InsightCardProps> = ({ title, points, icon }) => {
         {isLoading ? (
           <div className="flex items-center justify-center h-full py-8">
             <div className="relative">
-              <div className="w-8 h-8 border-4 border-blue-200 rounded-full"></div>
+              <div className="w-8 h-8 border-4 border-gray-700 rounded-full"></div>
               <div className="absolute top-0 left-0 w-8 h-8 border-4 border-blue-500 rounded-full border-t-transparent animate-spin"></div>
             </div>
           </div>
         ) : (
-          <ul className="space-y-3 transition-opacity duration-500 text-gray-600">
+          <ul className="space-y-3 transition-opacity duration-500">
             {points.map((point, index) => (
               <TypewriterBulletPoint
                 key={index}
@@ -213,9 +210,9 @@ const InsightCard: React.FC<InsightCardProps> = ({ title, points, icon }) => {
 export const SummaryTab: React.FC<SummaryTabProps> = ({ isLoading }) => {
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-64">
+      <div className="flex justify-center items-center h-64 bg-gray-900/50 backdrop-blur-lg rounded-lg shadow-2xl border border-gray-800">
         <div className="relative">
-          <div className="w-12 h-12 border-4 border-blue-200 rounded-full"></div>
+          <div className="w-12 h-12 border-4 border-gray-700 rounded-full"></div>
           <div className="absolute top-0 left-0 w-12 h-12 border-4 border-blue-500 rounded-full border-t-transparent animate-spin"></div>
         </div>
       </div>
@@ -259,7 +256,7 @@ export const SummaryTab: React.FC<SummaryTabProps> = ({ isLoading }) => {
     { name: "French", value: 10 },
   ];
 
-  const COLORS = ["#2196f3", "#ff9800", "#9c27b0"];
+  const COLORS = ["#60A5FA", "#F59E0B", "#8B5CF6"];
 
   const commonPraisePoints: string[] = [
     "Check-in process is consistently quick and efficient",
@@ -276,35 +273,38 @@ export const SummaryTab: React.FC<SummaryTabProps> = ({ isLoading }) => {
   ];
 
   return (
-    <div className="bg-white rounded-lg shadow p-6 bg-white text-gray-900">
+    <div className="bg-gray-900/50 backdrop-blur-lg rounded-lg shadow-2xl p-6 border border-gray-800">
       <div className="mt-6">
-        <h3 className="text-xl font-bold mb-4">Locations</h3>
-        <MapContainer
-          center={[51.505, -0.09]}
-          zoom={13}
-          style={{ height: "400px", width: "100%" }}
-        >
-          <TileLayer
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          />
-          {locations.map((location) => (
-            <Marker key={location.id} position={[location.lat, location.lng]}>
-              <Popup>
-                <div>
-                  <h4>{location.name}</h4>
-                  <p>Positive: {location.metrics.positive}%</p>
-                  <p>Neutral: {location.metrics.neutral}%</p>
-                  <p>Negative: {location.metrics.negative}%</p>
-                </div>
-              </Popup>
-            </Marker>
-          ))}
-        </MapContainer>
+        <h3 className="text-xl font-bold mb-4 text-gray-200">Locations</h3>
+        <div className="rounded-lg overflow-hidden border border-gray-800">
+          <MapContainer
+            center={[51.505, -0.09]}
+            zoom={13}
+            style={{ height: "400px", width: "100%" }}
+            className="map-dark" // Add custom CSS for dark theme map
+          >
+            <TileLayer
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            />
+            {locations.map((location) => (
+              <Marker key={location.id} position={[location.lat, location.lng]}>
+                <Popup className="dark-popup">
+                  <div className="text-gray-800">
+                    <h4 className="font-bold">{location.name}</h4>
+                    <p>Positive: {location.metrics.positive}%</p>
+                    <p>Neutral: {location.metrics.neutral}%</p>
+                    <p>Negative: {location.metrics.negative}%</p>
+                  </div>
+                </Popup>
+              </Marker>
+            ))}
+          </MapContainer>
+        </div>
       </div>
 
-      <h2 className="text-2xl font-bold mb-4">Feedback Summary</h2>
-      <p className="mb-6">
+      <h2 className="text-2xl font-bold mb-4 mt-8 text-gray-200">Feedback Summary</h2>
+      <p className="mb-6 text-gray-400">
         Here's a quick overview of recurring themes and insights from customer
         feedback.
       </p>
@@ -323,8 +323,8 @@ export const SummaryTab: React.FC<SummaryTabProps> = ({ isLoading }) => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="rounded-lg shadow p-6 bg-white">
-          <h3 className="text-xl font-bold mb-4">Sentiment Analysis</h3>
+        <div className="rounded-lg shadow-xl p-6 bg-gray-800/50 backdrop-blur-lg border border-gray-700">
+          <h3 className="text-xl font-bold mb-4 text-gray-200">Sentiment Analysis</h3>
           <BarChart
             width={500}
             height={300}
@@ -336,31 +336,35 @@ export const SummaryTab: React.FC<SummaryTabProps> = ({ isLoading }) => {
               bottom: 5,
             }}
           >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis />
-            <Tooltip />
+            <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+            <XAxis dataKey="name" stroke="#9CA3AF" />
+            <YAxis stroke="#9CA3AF" />
+            <Tooltip 
+              contentStyle={{ 
+                backgroundColor: '#1F2937',
+                border: '1px solid #374151',
+                borderRadius: '0.375rem',
+                color: '#E5E7EB'
+              }}
+            />
             <Legend />
-            <Bar dataKey="Positive" fill="#4caf50" />
-            <Bar dataKey="Neutral" fill="#ffeb3b" />
-            <Bar dataKey="Negative" fill="#f44336" />
+            <Bar dataKey="Positive" fill="#60A5FA" />
+            <Bar dataKey="Neutral" fill="#F59E0B" />
+            <Bar dataKey="Negative" fill="#EF4444" />
           </BarChart>
         </div>
 
-        <div
-          className={`rounded-lg shadow p-6 bg-white"
-          }`}
-        >
-          <h3 className="text-xl font-bold mb-4">Top Languages</h3>
+        <div className="rounded-lg shadow-xl p-6 bg-gray-800/50 backdrop-blur-lg border border-gray-700">
+          <h3 className="text-xl font-bold mb-4 text-gray-200">Top Languages</h3>
           <PieChart width={400} height={400}>
             <Pie
               data={pieData}
               cx={200}
               cy={200}
               labelLine={false}
-              label={({ name, percent }) =>
+              label={({ name, percent }) => (
                 `${name} ${(percent * 100).toFixed(0)}%`
-              }
+              )}
               outerRadius={80}
               fill="#8884d8"
               dataKey="value"
@@ -372,7 +376,14 @@ export const SummaryTab: React.FC<SummaryTabProps> = ({ isLoading }) => {
                 />
               ))}
             </Pie>
-            <Tooltip />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: '#1F2937',
+                border: '1px solid #374151',
+                borderRadius: '0.375rem',
+                color: '#E5E7EB'
+              }}
+            />
           </PieChart>
         </div>
       </div>

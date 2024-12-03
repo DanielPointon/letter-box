@@ -27,29 +27,52 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
       >
-        <Navbar className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-6 py-4">
-          <NavbarBrand>
-            <Link href="/">
-              <div className="flex items-center space-x-2">
-                <Sparkles className="w-8 h-8" />
-                <h1 className="text-3xl font-bold">Insightify</h1>
+        <nav className="fixed w-full z-50 bg-gray-900/90 backdrop-blur-xl border-b border-gray-800">
+          <div className="max-w-7xl mx-auto px-8">
+            <div className="flex h-28 items-center justify-between">
+              <Link href="/" className="flex items-center space-x-4 hover:opacity-90 transition-opacity">
+                <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl p-3 shadow-lg">
+                  <Sparkles className="w-10 h-10 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+                    Insightify
+                  </h1>
+                  <p className="text-sm text-gray-400 mt-1">Advanced Customer Insights Platform</p>
+                </div>
+              </Link>
+
+              <div className="hidden md:flex items-center">
+                <div className="flex items-center space-x-8 mr-10">
+                  <Link href="/dashboard" className="text-gray-300 hover:text-white transition-colors text-lg">
+                    Dashboard
+                  </Link>
+                  <Link href="/analytics" className="text-gray-300 hover:text-white transition-colors text-lg">
+                    Analytics
+                  </Link>
+                  <Link href="/settings" className="text-gray-300 hover:text-white transition-colors text-lg">
+                    Settings
+                  </Link>
+                </div>
+
+                <div className="flex items-center space-x-2 py-3 px-5 bg-gray-800/50 rounded-lg border border-gray-700">
+                  <span className="text-sm text-gray-300">
+                    Powered by <span className="font-semibold text-blue-400">Gemini Nano</span>
+                  </span>
+                  <Sparkles className="w-4 h-4 text-blue-400" />
+                </div>
               </div>
-            </Link>
-          </NavbarBrand>
-          <NavbarContent>
-            <div className="hidden md:flex items-center text-sm text-blue-100 border-l border-blue-400 pl-4">
-              <span>
-                Powered by <b>Gemini Nano</b>
-              </span>
-              <Sparkles className="w-4 h-4 ml-1" />
             </div>
-          </NavbarContent>
-        </Navbar>
-        {children}
+          </div>
+        </nav>
+
+        <main className="pt-28 min-h-screen bg-gray-900">
+          {children}
+        </main>
       </body>
     </html>
   );

@@ -11,7 +11,11 @@ export default {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
-      },
+        card: "var(--card-background)",
+        cardHover: "var(--card-hover)",
+        border: "var(--border-color)",
+        textPrimary: "var(--text-primary)",
+        textSecondary: "var(--text-secondary)",        },
     },
   },
   plugins: [],

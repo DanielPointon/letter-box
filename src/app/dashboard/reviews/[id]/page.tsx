@@ -80,61 +80,61 @@ export default function ReviewDetails() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-3xl mx-auto bg-white rounded-lg shadow p-6">
+    <div className="min-h-screen bg-gray-900 p-6">
+      <div className="max-w-3xl mx-auto bg-gray-800/50 backdrop-blur-lg rounded-lg shadow-2xl p-6 border border-gray-700">
         {/* Review Header */}
         <div className="flex items-center mb-6">
-          <div className="bg-blue-500 text-white w-12 h-12 flex justify-center items-center rounded-full text-xl font-bold">
+          <div className="bg-gradient-to-br from-blue-600 to-indigo-600 text-white w-12 h-12 flex justify-center items-center rounded-full text-xl font-bold shadow-lg">
             A
           </div>
           <div className="ml-4">
-            <h2 className="text-xl font-semibold text-gray-700">
+            <h2 className="text-xl font-semibold text-gray-200">
               Customer Review #{id}
             </h2>
-            <p className="text-sm text-gray-500">Posted on {mockReview.date}</p>
+            <p className="text-sm text-gray-400">Posted on {mockReview.date}</p>
           </div>
         </div>
 
         {/* Review Content */}
-        <div className="mb-6">
-          <p className="text-lg text-gray-700 mb-2">
+        <div className="mb-6 p-4 rounded-lg bg-gray-900/50 border border-gray-700">
+          <p className="text-lg text-gray-300 mb-2">
             {mockReview.content}
           </p>
-          <p className="text-sm text-gray-500">Language: {mockReview.language}</p>
+          <p className="text-sm text-gray-400">Language: {mockReview.language}</p>
         </div>
 
         {/* Respond Section */}
         {!isSubmitted ? (
           <div>
-            <h3 className="text-lg font-bold text-gray-700 mb-4">
+            <h3 className="text-lg font-bold text-gray-200 mb-4">
               Respond to Review
             </h3>
 
             {/* Dual Language Response Display */}
             <div className="grid grid-cols-2 gap-4 mb-4">
               <div className="relative">
-                <label className="block text-sm font-medium text-gray-700 mb-2">English</label>
+                <label className="block text-sm font-medium text-gray-300 mb-2">English</label>
                 <textarea
                   value={response}
                   onChange={handleResponseChange}
-                  className="w-full h-32 border-gray-300 rounded p-2 focus:ring-2 focus:ring-blue-500 text-gray-900"
+                  className="w-full h-32 bg-gray-900/70 border-gray-700 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 text-gray-200 placeholder-gray-500"
                   placeholder="Write your response..."
                   disabled={isTyping}
                 />
                 {isTyping && (
-                  <span className="absolute bottom-3 right-3 animate-pulse text-blue-500">▍</span>
+                  <span className="absolute bottom-3 right-3 animate-pulse text-blue-400">▍</span>
                 )}
               </div>
               <div className="relative">
-                <label className="block text-sm font-medium text-gray-700 mb-2">{mockReview.language}</label>
+                <label className="block text-sm font-medium text-gray-300 mb-2">{mockReview.language}</label>
                 <textarea
                   value={translation}
-                  className="w-full h-32 border-gray-300 rounded p-2 bg-gray-50 text-gray-900"
+                  className="w-full h-32 bg-gray-900/50 border-gray-700 rounded-lg p-2 text-gray-300"
                   disabled
                   placeholder="Translation will appear here..."
                 />
                 {isTyping && (
-                  <span className="absolute bottom-3 right-3 animate-pulse text-blue-500">▍</span>
+                  <span className="absolute bottom-3 right-3 animate-pulse text-blue-400">▍</span>
                 )}
               </div>
             </div>
@@ -144,8 +144,8 @@ export default function ReviewDetails() {
               <button
                 onClick={handleGenerateAIResponse}
                 className={`${
-                  aiLoading ? "bg-gray-400" : "bg-blue-600 hover:bg-blue-500"
-                } text-white px-4 py-2 rounded shadow flex items-center space-x-2`}
+                  aiLoading ? "bg-gray-700" : "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500"
+                } text-white px-4 py-2 rounded-lg shadow-lg hover:shadow-xl flex items-center space-x-2 transition-all duration-200`}
                 disabled={aiLoading || isSubmitting || isTyping}
               >
                 {aiLoading && (
@@ -176,8 +176,8 @@ export default function ReviewDetails() {
                 onClick={handleSubmitResponse}
                 disabled={isSubmitting || !response || isTyping}
                 className={`
-                  ${isSubmitting ? 'bg-gray-400' : 'bg-green-600 hover:bg-green-500'} 
-                  text-white px-4 py-2 rounded shadow flex items-center space-x-2
+                  ${isSubmitting || !response || isTyping ? 'bg-gray-700' : 'bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500'} 
+                  text-white px-4 py-2 rounded-lg shadow-lg hover:shadow-xl flex items-center space-x-2 transition-all duration-200 disabled:opacity-50
                 `}
               >
                 {isSubmitting ? (
@@ -211,11 +211,11 @@ export default function ReviewDetails() {
             </div>
           </div>
         ) : (
-          <div className="text-center py-8">
-            <div className="text-2xl font-bold text-green-600 mb-2">
+          <div className="text-center py-8 bg-gray-900/50 rounded-lg border border-green-500/30">
+            <div className="text-2xl font-bold text-green-400 mb-2">
               Response submitted!
             </div>
-            <p className="text-gray-600">
+            <p className="text-gray-300">
               Your response has been successfully submitted and translated.
             </p>
           </div>
