@@ -31,7 +31,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
       >
-        <nav className="fixed w-full z-50 bg-gray-900/90 backdrop-blur-xl border-b border-gray-800">
+        <nav style={{"zIndex": "1000"}} className="fixed w-full z-50 bg-gray-900/90 backdrop-blur-xl border-b border-gray-800">
           <div className="max-w-7xl mx-auto px-8">
             <div className="flex h-28 items-center justify-between">
               <Link href="/" className="flex items-center space-x-4 hover:opacity-90 transition-opacity">
