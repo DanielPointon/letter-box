@@ -51,12 +51,6 @@ export default function RootLayout({
                   <Link href="/dashboard" className="text-gray-300 hover:text-white transition-colors text-lg">
                     Dashboard
                   </Link>
-                  <Link href="/analytics" className="text-gray-300 hover:text-white transition-colors text-lg">
-                    Analytics
-                  </Link>
-                  <Link href="/settings" className="text-gray-300 hover:text-white transition-colors text-lg">
-                    Settings
-                  </Link>
                 </div>
 
                 <div className="flex items-center space-x-2 py-3 px-5 bg-gray-800/50 rounded-lg border border-gray-700">
