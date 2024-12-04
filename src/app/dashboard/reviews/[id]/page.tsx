@@ -1,10 +1,14 @@
 "use client";
 
+import { useReviews } from "@/context/reviewsContext";
 import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
 
 export default function ReviewDetails() {
   const { id } = useParams();
+  const { getReviewById, markAsResponded, translations } = useReviews();
+  const review = getReviewById(id as string);
+  
   const [response, setResponse] = useState("");
   const [translation, setTranslation] = useState("");
   const [aiLoading, setAiLoading] = useState(false);
@@ -12,24 +16,9 @@ export default function ReviewDetails() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
 
-  // Mock review data
-  const mockReview = {
-    language: "Spanish",
-    content: "The service was fantastic! I received my order on time, and the quality was excellent.",
-    date: "Nov 29, 2024"
-  };
-
-  // Mock translations
-  const mockTranslations = {
-    Spanish: {
-      "Thank you for your feedback! We're glad you enjoyed your experience and will strive to make it even better.":
-        "¡Gracias por sus comentarios! ¡Nos alegra que haya disfrutado de su experiencia y nos esforzaremos por mejorarla aún más!"
-    }
-  };
-
   const getTranslation = (text: string): string => {
-    return mockTranslations[mockReview.language]?.[text] || 
-      `[${mockReview.language} translation would go here]`;
+    if (!review?.lang || review.lang === "English") return text;
+    return translations[review.lang]?.[text] || `[${review.lang} translation would go here]`;
   };
 
   const typewriterEffect = async (text: string, translatedText: string, speed: number = 30) => {
@@ -66,8 +55,10 @@ export default function ReviewDetails() {
   };
 
   const handleSubmitResponse = async () => {
+    if (!id) return;
     setIsSubmitting(true);
     await new Promise(resolve => setTimeout(resolve, 1000));
+    markAsResponded(id);
     setIsSubmitted(true);
     setIsSubmitting(false);
   };
@@ -79,28 +70,36 @@ export default function ReviewDetails() {
     }
   };
 
+  if (!review) {
+    return (
+      <div className="min-h-screen bg-gray-900 p-6 flex items-center justify-center">
+        <div className="text-white">Review not found</div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-900 p-6">
       <div className="max-w-3xl mx-auto bg-gray-800/50 backdrop-blur-lg rounded-lg shadow-2xl p-6 border border-gray-700">
         {/* Review Header */}
         <div className="flex items-center mb-6">
           <div className="bg-gradient-to-br from-blue-600 to-indigo-600 text-white w-12 h-12 flex justify-center items-center rounded-full text-xl font-bold shadow-lg">
-            A
+            {review.user.username[0]}
           </div>
           <div className="ml-4">
             <h2 className="text-xl font-semibold text-gray-200">
-              Customer Review #{id}
+              {review.user.username}
             </h2>
-            <p className="text-sm text-gray-400">Posted on {mockReview.date}</p>
+            <p className="text-sm text-gray-400">Posted {review.responseTime} ago</p>
           </div>
         </div>
 
         {/* Review Content */}
         <div className="mb-6 p-4 rounded-lg bg-gray-900/50 border border-gray-700">
           <p className="text-lg text-gray-300 mb-2">
-            {mockReview.content}
+            {review.text}
           </p>
-          <p className="text-sm text-gray-400">Language: {mockReview.language}</p>
+          <p className="text-sm text-gray-400">Language: {review.lang}</p>
         </div>
 
         {/* Respond Section */}
@@ -126,7 +125,7 @@ export default function ReviewDetails() {
                 )}
               </div>
               <div className="relative">
-                <label className="block text-sm font-medium text-gray-300 mb-2">{mockReview.language}</label>
+                <label className="block text-sm font-medium text-gray-300 mb-2">{review.lang}</label>
                 <textarea
                   value={translation}
                   className="w-full h-32 bg-gray-900/50 border-gray-700 rounded-lg p-2 text-gray-300"
