@@ -32,7 +32,7 @@ export default function Dashboard() {
         <input
           type="text"
           className="bg-gray-800/50 border-gray-700 text-gray-200 rounded-lg p-2 mr-2 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent backdrop-blur-lg w-full max-w-md"
-          placeholder="Enter Place IDs (comma separated)"
+          placeholder="ChIJPTacEpBQwokRKwIlDXelxkA,ChIJpTvG15DL1IkRd8S0KlBVNTI,ChIJ2eUgeAK6j4ARbn5u_wAGqWA"
           onChange={handlePlaceIdsChange}
         />
         <button
